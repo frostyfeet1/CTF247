@@ -1,0 +1,30 @@
+import pwn
+import time
+import random
+
+#enter your own 
+url ='2b424aa262c65439.247ctf.com'
+port = 50311
+
+#we use same way to create random number
+
+secret = random.Random()
+for i in range(1000):
+
+    secret.seed(int(time.time()))
+
+    r = pwn.remote(url,port)
+    print(r.recvuntil('?'))
+    win = str(secret.random())
+    win = win[:-4] # had to shorten string cause it was longer than string we need to guess
+    print(r.recvline())
+    r.sendline((win + '\r\n').encode('utf-8'))
+    u = str(r.recvline())
+    print(u)
+    print(win)
+    if 'Nope' not in u:
+        print(r.recvline())
+        print('win')
+        exit()
+
+    r.close()
